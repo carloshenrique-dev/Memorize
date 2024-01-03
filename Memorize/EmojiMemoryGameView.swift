@@ -20,12 +20,14 @@ struct EmojiMemoryGameView: View {
             }
             .padding()
             .foregroundColor(.orange)
-            Button {
-                withAnimation(.easeInOut, { viewModel.resetGame() })
-            } label: {
-                Text("New Game")
-            }
-
+        }
+        .alert(isPresented: $viewModel.showAlert) {
+            Alert(title: Text("Parabéns!"), message: Text("Você venceu!"), dismissButton: .default(Text("OK")) {
+                withAnimation(.easeInOut) {
+                    viewModel.showAlert = false
+                    viewModel.resetGame()
+                }
+            })
         }
     }
 }
@@ -58,6 +60,7 @@ struct CardView: View {
                         }
                     }
                     .padding(10).opacity(0.4)
+                    .transition(.identity)
                     Text(card.content)
                         .font(.system(size: fontSize(for: geometry.size)))
                         .rotationEffect(.degrees(card.isMatched ? 360 : 0))

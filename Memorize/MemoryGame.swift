@@ -8,7 +8,15 @@
 import Foundation
 
 struct MemoryGame<CardContent> where CardContent: Equatable {
-    private(set) var cards: Array<Card>
+    private(set) var cards: Array<Card> {
+        didSet {
+            if isEveryCardMatched() {
+                handleAllCardsMatched()
+            }
+        }
+    }
+    
+   var victory: Bool = false
     
     private var indexOfTheOnlyFaceUpCard: Int? {
         get { return cards.indices.filter { cards[$0].isFaceUp }.only }
@@ -26,11 +34,19 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
                     cards[chosenIndex].isMatched = true
                     cards[potentialMatchIndex].isMatched = true
                 }
-                self.cards[chosenIndex].isFaceUp = true
+                cards[chosenIndex].isFaceUp = true
             } else {
                 indexOfTheOnlyFaceUpCard = chosenIndex
             }
         }
+    }
+    
+    private func isEveryCardMatched() -> Bool {
+        return cards.allSatisfy { $0.isMatched }
+    }
+    
+    private mutating func handleAllCardsMatched() {
+       victory = true
     }
     
     init(numberOfPairsOfCards: Int, cardContentFactory: (Int) -> CardContent) {
